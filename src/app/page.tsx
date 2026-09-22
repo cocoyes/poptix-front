@@ -17,59 +17,86 @@ function RailControls({onPrevious, onNext, canPrevious}:{onPrevious:()=>void;onN
 }
 
 export default function Home(){
-  const [activeSlide, setActiveSlide] = useState(0)
+  const [visualSlide, setVisualSlide] = useState(1)
+  const [dragOffset, setDragOffset] = useState(0)
+  const [carouselTransition, setCarouselTransition] = useState(true)
   const [trendingAtStart, setTrendingAtStart] = useState(true)
   const [poolsAtStart, setPoolsAtStart] = useState(true)
   const heroRef = useRef<HTMLDivElement>(null)
   const trendingRef = useRef<HTMLDivElement>(null)
   const poolsRef = useRef<HTMLDivElement>(null)
   const dragStartX = useRef(0)
-  const dragStartScroll = useRef(0)
+  const dragOffsetRef = useRef(0)
   const dragged = useRef(false)
+  const dragging = useRef(false)
+  const carouselSlides = [featuredEvents[featuredEvents.length-1], ...featuredEvents, featuredEvents[0]]
+  const activeSlide = ((visualSlide-1)%featuredEvents.length+featuredEvents.length)%featuredEvents.length
 
   useEffect(()=>{
-    const timer = window.setInterval(()=>setActiveSlide(current=>{
-      const next=(current+1)%featuredEvents.length
-      const track=heroRef.current
-      if(track) track.scrollTo({left:track.clientWidth*next,behavior:'smooth'})
-      return next
-    }),6000)
+    const timer = window.setInterval(()=>{if(!dragging.current){setCarouselTransition(true);setVisualSlide(current=>current+1)}},6000)
     return ()=>window.clearInterval(timer)
   },[])
+
+  useEffect(()=>{
+    if(visualSlide>0&&visualSlide<featuredEvents.length+1)return
+    const timer=window.setTimeout(()=>{
+      const normalized=((visualSlide-1)%featuredEvents.length+featuredEvents.length)%featuredEvents.length+1
+      setCarouselTransition(false)
+      setVisualSlide(normalized)
+      window.requestAnimationFrame(()=>window.requestAnimationFrame(()=>setCarouselTransition(true)))
+    },540)
+    return ()=>window.clearTimeout(timer)
+  },[visualSlide])
 
   const scrollRail = (ref: React.RefObject<HTMLDivElement | null>, direction: number) => ref.current?.scrollBy({left: direction * 330, behavior:'smooth'})
   const startHeroDrag = (event:ReactPointerEvent<HTMLDivElement>)=>{
     if(event.button!==0)return
     dragStartX.current=event.clientX
-    dragStartScroll.current=event.currentTarget.scrollLeft
     dragged.current=false
+    dragging.current=true
+    dragOffsetRef.current=0
+    setCarouselTransition(false)
     event.currentTarget.setPointerCapture(event.pointerId)
-    event.currentTarget.classList.add('dragging')
+    event.currentTarget.classList.add('is-dragging')
   }
   const moveHeroDrag = (event:ReactPointerEvent<HTMLDivElement>)=>{
     if(!event.currentTarget.hasPointerCapture(event.pointerId))return
     const distance=event.clientX-dragStartX.current
     if(Math.abs(distance)>5)dragged.current=true
-    event.currentTarget.scrollLeft=dragStartScroll.current-distance
+    if(dragged.current)event.preventDefault()
+    dragOffsetRef.current=distance
+    setDragOffset(distance)
   }
   const endHeroDrag = (event:ReactPointerEvent<HTMLDivElement>)=>{
     if(event.currentTarget.hasPointerCapture(event.pointerId))event.currentTarget.releasePointerCapture(event.pointerId)
-    event.currentTarget.classList.remove('dragging')
-    const next=Math.round(event.currentTarget.scrollLeft/event.currentTarget.clientWidth)
-    event.currentTarget.scrollTo({left:next*event.currentTarget.clientWidth,behavior:'smooth'})
-    setActiveSlide(next)
+    event.currentTarget.classList.remove('is-dragging')
+    dragging.current=false
+    const threshold=Math.min(90,event.currentTarget.clientWidth*.12)
+    setCarouselTransition(true)
+    const finalOffset=dragOffsetRef.current
+    if(Math.abs(finalOffset)>threshold)setVisualSlide(current=>current+(finalOffset<0?1:-1))
+    dragOffsetRef.current=0
+    setDragOffset(0)
+    window.setTimeout(()=>{dragged.current=false},0)
   }
   const preventDraggedNavigation=(event:ReactMouseEvent<HTMLDivElement>)=>{
     if(!dragged.current)return
     event.preventDefault()
     event.stopPropagation()
-    window.setTimeout(()=>{dragged.current=false},0)
+  }
+  const normalizeCarousel=()=>{
+    if(visualSlide>0&&visualSlide<featuredEvents.length+1)return
+    const normalized=((visualSlide-1)%featuredEvents.length+featuredEvents.length)%featuredEvents.length+1
+    setCarouselTransition(false)
+    setVisualSlide(normalized)
+    window.requestAnimationFrame(()=>window.requestAnimationFrame(()=>setCarouselTransition(true)))
   }
 
   return <div className="content home-content">
     <section className="home-carousel" aria-label="Featured events">
-      <div className="home-carousel-track" ref={heroRef} onPointerDown={startHeroDrag} onPointerMove={moveHeroDrag} onPointerUp={endHeroDrag} onPointerCancel={endHeroDrag} onClickCapture={preventDraggedNavigation} onScroll={event=>setActiveSlide(Math.round(event.currentTarget.scrollLeft/event.currentTarget.clientWidth))}>
-        {featuredEvents.map(event=> <Link href={`/events/${event.id}`} className="home-slide" key={event.id} style={{backgroundImage:`url(${event.cover})`}} aria-label={`View ${event.name}`}>
+      <div className="home-carousel-track" ref={heroRef} onDragStart={event=>event.preventDefault()} onPointerDown={startHeroDrag} onPointerMove={moveHeroDrag} onPointerUp={endHeroDrag} onPointerCancel={endHeroDrag} onClickCapture={preventDraggedNavigation}>
+        <div className="home-carousel-strip" onTransitionEnd={normalizeCarousel} style={{transform:`translate3d(calc(-${visualSlide*100}% + ${dragOffset}px),0,0)`,transition:carouselTransition?'transform 520ms cubic-bezier(.22,.72,.22,1)':'none'}}>
+        {carouselSlides.map((event,index)=> <Link draggable={false} href={`/events/${event.id}`} className="home-slide" key={`${event.id}-${index}`} style={{backgroundImage:`url(${event.cover})`}} aria-label={`View ${event.name}`}>
           <div className="home-slide-shade"/>
           <div className="home-slide-content">
             <span className="home-kicker">Featured event</span>
@@ -79,6 +106,7 @@ export default function Home(){
             <span className="btn primary home-slide-button">View event <ArrowRight size={15}/></span>
           </div>
         </Link>)}
+        </div>
       </div>
       <div className="home-carousel-dots" aria-hidden="true">{featuredEvents.map((event,index)=><span key={event.id} className={index===activeSlide?'active':''}/>)}</div>
     </section>

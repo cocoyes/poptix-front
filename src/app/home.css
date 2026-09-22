@@ -26,3 +26,10 @@
 .home-rail-wrap:hover .home-rail-arrow,.home-rail-arrow:focus-visible{opacity:1;pointer-events:auto;transform:translateY(-50%) scale(1)}
 .home-rail-arrow:hover{background:#2081e2;border-color:#2081e2}
 @media(max-width:680px){.home-rail-arrow{display:none}}
+
+/* Transform-based infinite carousel: reliable mouse dragging with seamless wraparound. */
+.home-carousel-track{display:block;overflow:hidden;scroll-snap-type:none;cursor:grab;touch-action:pan-y;-webkit-user-drag:none}
+.home-carousel-track a{-webkit-user-drag:none}
+.home-carousel-track.is-dragging{cursor:grabbing}
+.home-carousel-strip{display:flex;width:100%;will-change:transform}
+.home-carousel-strip .home-slide{flex:0 0 100%;scroll-snap-align:none}

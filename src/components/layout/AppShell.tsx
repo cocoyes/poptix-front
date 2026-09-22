@@ -3,11 +3,11 @@
 import Link from 'next/link'
 import {usePathname, useRouter} from 'next/navigation'
 import {useEffect, useMemo, useRef, useState} from 'react'
-import {Bell, ChevronDown, Compass, Gift, Home, LogOut, Menu, Search, Settings, ShieldCheck, ShoppingBag, Ticket, TrendingUp, UserRound, Wallet, X} from 'lucide-react'
+import {BarChart3, Bell, ChevronDown, Compass, Gift, Home, LogOut, Menu, Search, Settings, ShieldCheck, ShoppingBag, Ticket, TrendingUp, UserRound, Wallet, WalletCards, X} from 'lucide-react'
 import {events} from '@/mock/data'
 import {useAppStore} from '@/stores/app'
 
-const links=[['/','Home',Home],['/events','Events',Compass],['/pools','Ticket Pools',Ticket],['/marketplace','Marketplace',ShoppingBag],['/trade','Trade Center',TrendingUp],['/portfolio','Portfolio',Wallet],['/rewards','Rewards',Gift],['/profile','Profile',UserRound]] as const
+const links=[['/','Home',Home],['/events','Events',Compass],['/pools','Ticket Pools',Ticket],['/marketplace','Marketplace',ShoppingBag],['/trade','Trade Center',TrendingUp],['/portfolio','Portfolio',Wallet],['/wallet','Wallet',WalletCards],['/seller','Seller Studio',BarChart3],['/rewards','Rewards',Gift],['/profile','Profile',UserRound]] as const
 
 export function AppShell({children}:{children:React.ReactNode}){
   const path=usePathname()

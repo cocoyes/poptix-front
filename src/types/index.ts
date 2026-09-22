@@ -1,0 +1,10 @@
+export type Category = 'concert' | 'sports' | 'festival' | 'theater'
+export type Event = { id:string; name:string; artist?:string; category:Category; country:string; city:string; venue:string; startAt:string; cover:string; status:'upcoming'|'live'|'ended' }
+export type TicketClass = { id:string; eventId:string; name:string; officialPrice:number; currency:string; marketPrice:number; bestBid:number; bestAsk:number; listings:number }
+export type TicketAsset = { id:string; eventId:string; ticketClassId:string; section?:string; row?:string; seat?:string; officialPrice:number; marketPrice:number; bestBid?:number; status:'owned'|'listed'|'pool_locked'|'redeemable'|'redeemed' }
+export type TicketPool = { id:string; eventId:string; name:string; drawPrice:number; nav:number; totalTickets:number; remainingTickets:number; topPrize:string; floorTicket:string; closeAt:string; participants:number; cover:string }
+export type PoolTier = { ticketClassId:string; probability:number; remaining:number; referenceValue:number }
+export type OrderBookLevel = { price:number; quantity:number }
+export type MarketSnapshot = { ticketClassId:string; bestBid:number; bestAsk:number; lastPrice:number; volume24h:number; bids:OrderBookLevel[]; asks:OrderBookLevel[] }
+export type Listing = { id:string; eventId:string; ticketClassId:string; section:string; row:string; price:number; officialPrice:number; tag:string }
+export type Mission = { id:string; title:string; description:string; reward:number; progress:number; target:number; complete:boolean }

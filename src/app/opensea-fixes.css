@@ -1,0 +1,65 @@
+.opensea-market .market-inventory.grid .market-listing{align-items:stretch;text-align:left}
+.opensea-market .market-inventory.grid .listing-thumb{background-color:#1a2025}
+.opensea-market .market-inventory.grid .listing-seat,
+.opensea-market .market-inventory.grid .listing-trust,
+.opensea-market .market-inventory.grid .listing-cost,
+.opensea-market .market-inventory.grid .listing-cta{text-align:left}
+.opensea-market .market-inventory.grid .listing-cta{width:100%}
+.opensea-market .market-inventory.grid .listing-cta .btn{width:100%!important}
+
+@media(min-width:1101px){
+  .sidebar{display:flex}
+  .main{margin-left:224px;width:calc(100% - 224px)}
+  .top-brand,.top-nav{display:none}
+  .header{padding:0 28px}
+  .header .global-search{margin-left:0;max-width:620px}
+}
+
+@media(min-width:681px) and (max-width:1100px){
+  .sidebar{display:flex;width:72px;flex-basis:72px;padding:18px 9px}
+  .main{margin-left:72px;width:calc(100% - 72px)}
+  .top-brand,.top-nav,.mobile-bottom-nav{display:none}
+  .header:before{display:none!important}
+  .header{padding:0 20px}
+  .header .global-search{margin-left:0;max-width:620px}
+  .brand{justify-content:center;padding-inline:0}
+  .brand>span:not(.brand-mark),.brand small,.nav a span,.sidebar-foot{display:none}
+  .nav a{justify-content:center;padding:0;font-size:0}
+  .nav a.active:before{position:absolute;left:9px;margin-left:0}
+}
+
+@media(max-width:680px){
+  .sidebar{display:none}
+  .main{margin-left:0;width:100%;min-width:0}
+  .top-brand{display:flex}
+  .top-nav{display:none}
+  .header{padding:0 12px;gap:8px}
+  .header .global-search{width:auto;min-width:0;max-width:none;margin-left:0;flex:1}
+  .opensea-market{width:100%;padding:20px 14px calc(86px + env(safe-area-inset-bottom))}
+  .market-featured{min-height:440px;padding:24px 18px;background-position:62% center}
+  .featured-copy h1{font-size:36px;line-height:1.04}
+  .featured-copy>p{font-size:12px}
+  .featured-stats{gap:20px}
+  .featured-badge{right:12px;top:12px}
+  .collection-grid{grid-template-columns:1fr}
+  .collection-row{grid-template-columns:14px 40px minmax(0,1fr) 58px 48px;gap:9px}
+  .collection-row>span:nth-child(5){display:none}
+  .browse-heading{align-items:flex-start;flex-direction:column}
+  .category-pills{width:100%;overflow-x:auto;padding-bottom:2px}
+  .category-pills button{white-space:nowrap}
+}
+
+@media(max-width:520px){
+  .opensea-market .market-inventory.grid{grid-template-columns:1fr;gap:12px}
+  .opensea-market .market-inventory.grid .listing-thumb{height:190px}
+}
+
+@media(max-width:420px){
+  .featured-actions{display:grid;grid-template-columns:1fr 1fr}
+  .featured-actions .btn{padding-inline:10px}
+  .collection-row{grid-template-columns:14px 36px minmax(0,1fr) 56px;gap:8px}
+  .collection-art{width:36px;height:36px}
+  .collection-row>span:nth-child(6){display:none}
+  .market-result-bar{display:grid;gap:10px}
+  .market-controls{width:100%;justify-content:space-between}
+}

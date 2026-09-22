@@ -1,0 +1,7 @@
+'use client'
+import { create } from 'zustand'
+import { TicketAsset } from '@/types'
+import { assets as initialAssets } from '@/mock/data'
+type Toast={id:number;message:string;kind?:'success'|'info'}
+type AppState={sidebarOpen:boolean;authenticated:boolean;assets:TicketAsset[];points:number;favorites:string[];toast:Toast|null;toggleSidebar:()=>void;login:()=>void;logout:()=>void;addAsset:(asset:TicketAsset)=>void;updateAssetStatus:(id:string,status:TicketAsset['status'])=>void;removeAsset:(id:string)=>void;toggleFavorite:(id:string)=>void;addPoints:(n:number)=>void;showToast:(message:string,kind?:Toast['kind'])=>void;clearToast:()=>void}
+export const useAppStore=create<AppState>((set)=>({sidebarOpen:false,authenticated:false,assets:initialAssets,points:12450,favorites:[],toast:null,toggleSidebar:()=>set(s=>({sidebarOpen:!s.sidebarOpen})),login:()=>set({authenticated:true,toast:{id:Date.now(),message:'Account connected',kind:'success'}}),logout:()=>set({authenticated:false,toast:{id:Date.now(),message:'Signed out',kind:'info'}}),addAsset:(asset)=>set(s=>({assets:[asset,...s.assets]})),updateAssetStatus:(id,status)=>set(s=>({assets:s.assets.map(a=>a.id===id?{...a,status}:a)})),removeAsset:(id)=>set(s=>({assets:s.assets.filter(a=>a.id!==id)})),toggleFavorite:(id)=>set(s=>({favorites:s.favorites.includes(id)?s.favorites.filter(x=>x!==id):[...s.favorites,id]})),addPoints:(n)=>set(s=>({points:s.points+n})),showToast:(message,kind='info')=>set({toast:{id:Date.now(),message,kind}}),clearToast:()=>set({toast:null})}))

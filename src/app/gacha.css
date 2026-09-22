@@ -1,0 +1,472 @@
+/* ============================================================
+   Ticket pool page — machine, odds, live reveal feed.
+   ============================================================ */
+
+.pool-page{--lime:#52e0ff;--ease:cubic-bezier(.2,.8,.2,1);--ease-spring:cubic-bezier(.2,.8,.2,1)}
+.pool-hero {
+  text-align: center;
+  max-width: 720px;
+  margin: 22px auto 12px;
+}
+
+.pool-hero h1 {
+  font-size: clamp(34px, 4.4vw, 56px);
+  font-weight: 600;
+  letter-spacing: -.05em;
+  line-height: 1.02;
+  margin: 10px 0 8px;
+  background: linear-gradient(180deg, #fff, #a7b4c4);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.pool-hero p { color: var(--muted); font-size: 15px; margin: 8px 0 }
+
+.gacha-wrap { max-width: 780px; margin: 0 auto }
+
+.gacha-kicker {
+  text-align: center;
+  color: var(--dim);
+  font-size: 10px;
+  letter-spacing: .16em;
+  margin-bottom: 8px;
+}
+
+.live-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 7px;
+  border-radius: 50%;
+  vertical-align: 1px;
+  animation: livePulse 1.6s ease-in-out infinite;
+}
+
+.gacha-scene {
+  position: relative;
+  height: 400px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: var(--r-lg);
+}
+
+/* blueprint grid under the machine */
+.gacha-scene::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(90deg, rgba(255, 255, 255, .028) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, .028) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: linear-gradient(transparent, #000);
+  pointer-events: none;
+}
+
+.gacha-shadow {
+  position: absolute;
+  bottom: 46px;
+  width: 300px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, .75);
+  filter: blur(14px);
+}
+
+.gacha-machine {
+  position: relative;
+  z-index: 2;
+  width: 260px;
+  height: 400px;
+  transform: scale(.72);
+  transform-origin: 50% 85%;
+  filter: drop-shadow(0 26px 22px rgba(0, 0, 0, .5));
+}
+
+.gacha-shake,
+.gacha-machine.gacha-shake { animation: gachaShakeSmall .18s linear infinite }
+
+/* --- machine body --- */
+.gacha-cap {
+  position: absolute;
+  top: 4px;
+  left: 38px;
+  width: 184px;
+  height: 104px;
+  border-radius: 100px 100px 24px 24px;
+  border: 5px solid #25303a;
+  background: linear-gradient(145deg, #e3ecf2 0, #8b9aa6 48%, #47525c 100%);
+  box-shadow: inset 0 6px 10px rgba(255, 255, 255, .45);
+}
+
+.cap-highlight {
+  position: absolute;
+  left: 35px;
+  top: 14px;
+  width: 70px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .5);
+  transform: rotate(-20deg);
+  filter: blur(4px);
+}
+
+.gacha-glass {
+  position: absolute;
+  top: 71px;
+  left: 43px;
+  width: 174px;
+  height: 191px;
+  overflow: hidden;
+  border: 5px solid #59666f;
+  border-radius: 87px 87px 48px 48px;
+  background: radial-gradient(circle at 30% 17%, rgba(255, 255, 255, .68), rgba(154, 207, 228, .22) 9%, rgba(26, 43, 53, .76) 65%);
+  box-shadow:
+    inset 0 0 26px rgba(178, 229, 244, .26),
+    0 0 0 2px #1b2429;
+}
+
+.gacha-glass::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, rgba(255, 255, 255, .4), transparent 20%, transparent 70%, rgba(0, 0, 0, .26));
+  pointer-events: none;
+}
+
+.gacha-ball {
+  position: absolute;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  box-shadow:
+    inset -6px -7px 9px rgba(0, 0, 0, .25),
+    inset 5px 5px 8px rgba(255, 255, 255, .45),
+    0 7px 8px rgba(0, 0, 0, .3);
+  animation: floatY 4s ease-in-out infinite;
+}
+
+.ball-pink { left: 28px; top: 92px; background: linear-gradient(145deg, #ffb4b9, #e9687f) }
+.ball-blue { left: 91px; top: 56px; background: linear-gradient(145deg, #b4edff, #4ba4c7); animation-delay: .8s }
+.ball-yellow { right: 20px; top: 102px; background: linear-gradient(145deg, #ffe9a7, #dda739); animation-delay: .4s }
+.ball-purple { left: 58px; top: 127px; background: linear-gradient(145deg, #d6c5ff, #8f72d0); animation-delay: 1.2s }
+.ball-green { right: 47px; top: 143px; background: linear-gradient(145deg, #cdf7c0, #59c46f); animation-delay: 1.6s }
+
+.gacha-neck {
+  position: absolute;
+  top: 252px;
+  left: 58px;
+  width: 144px;
+  height: 28px;
+  border: 4px solid #25303a;
+  background: linear-gradient(#aab6bc, #56646c);
+}
+
+.gacha-body {
+  position: absolute;
+  top: 270px;
+  left: 25px;
+  width: 210px;
+  height: 100px;
+  padding: 0 17px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 5px solid #25303a;
+  border-radius: 20px 20px 30px 30px;
+  background: linear-gradient(145deg, #dbe4e8, #7b8991 48%, #404a50);
+}
+
+.gacha-logo {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 11px;
+  background: #0b0f14;
+  color: var(--lime);
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.gacha-name { font-size: 10px; line-height: 1.25; letter-spacing: .16em; color: #161f27 }
+.gacha-name b { font-size: 15px }
+
+.gacha-chute {
+  margin-left: auto;
+  width: 47px;
+  height: 29px;
+  display: grid;
+  place-items: center;
+  border: 3px solid #52626b;
+  border-radius: 7px;
+  background: #12181d;
+  color: var(--lime);
+  font-size: 17px;
+}
+
+.gacha-base {
+  position: absolute;
+  bottom: 0;
+  left: 12px;
+  width: 236px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  border: 5px solid #25303a;
+  border-radius: 10px 10px 18px 18px;
+  background: linear-gradient(#6b7c86, #2d383e);
+}
+
+.gacha-base span {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  border: 2px solid #94a8b1;
+  background: #162026;
+}
+
+.gacha-arm {
+  position: absolute;
+  right: -28px;
+  top: 216px;
+  width: 50px;
+  height: 106px;
+  border: 8px solid #6b7d86;
+  border-left: 0;
+  border-radius: 0 25px 25px 0;
+  transform: rotate(-8deg);
+}
+
+.gacha-arm::before {
+  content: '';
+  position: absolute;
+  right: -12px;
+  top: 32px;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  border: 4px solid #25303a;
+  background: #dbe4e8;
+}
+
+.gacha-arm i {
+  position: absolute;
+  right: -2px;
+  top: 40px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--lime);
+  box-shadow: 0 0 16px var(--lime);
+}
+
+/* --- controls --- */
+.gacha-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 14px 0;
+}
+
+.gacha-controls > div { display: flex; flex-direction: column; align-items: flex-end }
+.gacha-controls strong { font-size: 24px; font-weight: 650; font-variant-numeric: tabular-nums }
+.gacha-controls span { color: var(--dim); font-size: 11px }
+
+.gacha-button { min-width: 180px }
+
+.gacha-status {
+  position: absolute;
+  bottom: 26px;
+  z-index: 5;
+  color: var(--text);
+  font-size: 13px;
+  letter-spacing: .02em;
+  animation: fadeIn .3s var(--ease);
+}
+
+/* --- revealed ticket --- */
+.gacha-ticket {
+  position: absolute;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 230px;
+  padding: 25px 24px 20px;
+  border-radius: var(--r-md);
+  background: linear-gradient(165deg, #ffffff, #e6ecf2);
+  color: #0b0f14;
+  box-shadow: 0 26px 60px rgba(0, 0, 0, .65), 0 0 0 1px rgba(200, 255, 61, .35);
+  transform: scale(.86);
+  animation: ticketPop .6s var(--ease-spring) both;
+}
+
+.gacha-ticket small { font-size: 9px; letter-spacing: .14em; margin-top: 18px }
+.gacha-ticket strong { font-size: 38px; font-weight: 700; letter-spacing: -.05em; margin-top: 5px }
+.gacha-ticket span { font-size: 12px; margin-top: 4px; line-height: 1.4 }
+
+.gacha-ticket em {
+  font-style: normal;
+  width: 100%;
+  margin-top: 18px;
+  padding-top: 12px;
+  border-top: 1px dashed #8a949e;
+  font-size: 9px;
+  letter-spacing: .08em;
+}
+
+.ticket-perf {
+  position: absolute;
+  top: 0;
+  left: 12px;
+  right: 12px;
+  border-top: 2px dotted #a9b3bd;
+}
+
+/* --- confirmation + event card --- */
+.pool-success {
+  max-width: 780px;
+  margin: 16px auto 0;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.pool-event {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 28px;
+  max-width: 920px;
+  margin: 64px auto 0;
+  padding-top: 32px;
+  border-top: 1px solid var(--border);
+}
+
+.pool-event-image {
+  height: 190px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--border);
+  background-size: cover;
+  background-position: center;
+}
+
+.pool-event-copy h2 { font-size: 27px; font-weight: 600; letter-spacing: -.03em; margin: 10px 0 }
+.pool-event-copy p { display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 14px }
+.pool-trust { display: flex; gap: 18px; margin: 22px 0; color: var(--muted); font-size: 12px }
+.pool-trust span { display: flex; align-items: center; gap: 6px }
+
+.pool-metrics {
+  max-width: 920px;
+  margin: 48px auto 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.pool-metrics > div { padding: 24px 20px }
+.pool-metrics > div:last-child { border-right: 0 }
+.pool-metrics span { display: block; font-size: 11px }
+.pool-metrics strong { display: block; margin-top: 9px; font-size: 24px; font-weight: 600 }
+
+.pool-columns {
+  max-width: 920px;
+  margin-left: auto;
+  margin-right: auto;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 60px;
+}
+
+.pool-odds > div {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  align-items: center;
+  min-height: 62px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.pool-odds > div > span:not(.badge) { display: flex; flex-direction: column }
+.pool-odds small { color: var(--dim); font-size: 10.5px; margin-bottom: 3px }
+
+.pool-reveals > div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 56px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+
+.pool-reveals b { font-weight: 600; margin-right: 5px }
+.pool-reveals time { margin-left: auto; color: var(--dim); font-size: 11px }
+
+.reveal-avatar {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  border-radius: 50%;
+  font-size: 11px;
+}
+
+/* --- keyframes --- */
+@keyframes gachaShakeSmall {
+  0%, 100% { transform: scale(.72) rotate(0) }
+  25% { transform: scale(.72) rotate(-2deg) translateX(-3px) }
+  75% { transform: scale(.72) rotate(2deg) translateX(3px) }
+}
+
+@keyframes ticketPop {
+  from { transform: translateY(130px) rotate(8deg) scale(.6); opacity: 0 }
+  to { transform: translateY(0) rotate(-3deg) scale(.86); opacity: 1 }
+}
+
+@media (max-width: 760px) {
+  .pool-hero { margin-top: 16px; margin-bottom: 8px }
+  .pool-hero h1 { font-size: 34px }
+  .pool-hero p { font-size: 13.5px }
+
+  .gacha-scene { height: 330px }
+  .gacha-machine { transform: scale(.6) }
+  .gacha-machine.gacha-shake { animation: gachaShakeTiny .18s linear infinite }
+
+  .gacha-ticket { width: 196px; transform: scale(.78) }
+  .gacha-controls { gap: 12px; padding: 10px 0 }
+  .gacha-controls strong { font-size: 20px }
+  .gacha-button { min-width: 148px }
+
+  .pool-event { grid-template-columns: 1fr; margin-top: 40px }
+  .pool-trust { flex-direction: column; gap: 10px }
+  .pool-metrics { grid-template-columns: 1fr 1fr }
+  .pool-metrics > div:nth-child(2) { border-right: 0 }
+  .pool-columns { grid-template-columns: 1fr; gap: 40px }
+  .pool-odds > div { grid-template-columns: 1fr 1fr 1fr }
+  .pool-odds > div > span:last-child { display: none }
+  .pool-success { align-items: flex-start; flex-wrap: wrap }
+  .pool-success a { margin-left: 24px }
+}
+
+@keyframes gachaShakeTiny {
+  0%, 100% { transform: scale(.6) rotate(0) }
+  25% { transform: scale(.6) rotate(-2deg) translateX(-3px) }
+  75% { transform: scale(.6) rotate(2deg) translateX(3px) }
+}
+
+@keyframes livePulse{0%,100%{opacity:.45;transform:scale(.85)}50%{opacity:1;transform:scale(1.15)}}
+@keyframes floatY{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-6px) rotate(5deg)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+/* Restored neutral stage treatment. */
+.gacha-scene{border:1px solid #242424;background:radial-gradient(circle at 50% 20%,#27313b 0,#15191d 34%,#0d0d0d 72%)}
+.live-dot{background:#52e0ff}.pool-success{border:1px solid #2d2d2d;color:#aaa}.pool-success a{color:#fff}.pool-metrics>div{border-right:1px solid #242424}.pool-metrics span{color:#6f6f6f}.reveal-avatar{background:#292929}

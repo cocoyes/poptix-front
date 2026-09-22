@@ -1,0 +1,1 @@
+import Link from 'next/link'; export function SectionHeader({title,link}:{title:string;link?:string}){return <div className="section-head"><h2>{title}</h2>{link&&<Link href={link}>View all <span>→</span></Link>}</div>}

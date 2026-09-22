@@ -7,9 +7,19 @@
 .opensea-market .market-inventory.grid .listing-cta{width:100%}
 .opensea-market .market-inventory.grid .listing-cta .btn{width:100%!important}
 
+.sidebar,.main{transition:width .2s ease,margin-left .2s ease}
+.sidebar-collapse{position:absolute;z-index:3;right:-14px;top:78px;width:28px;height:28px;display:grid;place-items:center;padding:0;border:1px solid #303840;border-radius:50%;background:#151a1f;color:#aeb7bd;box-shadow:0 5px 16px rgba(0,0,0,.38);opacity:0;transform:translateX(-3px);transition:opacity .16s,transform .16s,background .16s}
+.sidebar:hover .sidebar-collapse,.sidebar-collapse:focus-visible{opacity:1;transform:translateX(0)}
+.sidebar-collapse:hover{background:#2081e2;border-color:#2081e2;color:#fff}
+
 @media(min-width:1101px){
   .sidebar{display:flex}
   .main{margin-left:224px;width:calc(100% - 224px)}
+  .sidebar.desktop-collapsed{width:72px;flex-basis:72px;padding-inline:9px}
+  .main.sidebar-is-collapsed{margin-left:72px;width:calc(100% - 72px)}
+  .sidebar.desktop-collapsed .brand{justify-content:center;padding-inline:0}
+  .sidebar.desktop-collapsed .brand>span:not(.brand-mark),.sidebar.desktop-collapsed .brand small,.sidebar.desktop-collapsed .nav a span,.sidebar.desktop-collapsed .sidebar-foot{display:none}
+  .sidebar.desktop-collapsed .nav a{justify-content:center;padding:0;font-size:0}
   .top-brand,.top-nav{display:none}
   .header{padding:0 28px}
   .header .global-search{margin-left:0;max-width:620px}
@@ -26,10 +36,12 @@
   .brand>span:not(.brand-mark),.brand small,.nav a span,.sidebar-foot{display:none}
   .nav a{justify-content:center;padding:0;font-size:0}
   .nav a.active:before{position:absolute;left:9px;margin-left:0}
+  .sidebar-collapse{display:none}
 }
 
 @media(max-width:680px){
   .sidebar{display:none}
+  .sidebar-collapse{display:none}
   .main{margin-left:0;width:100%;min-width:0}
   .top-brand{display:flex}
   .top-nav{display:none}

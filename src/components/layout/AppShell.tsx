@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import {usePathname, useRouter} from 'next/navigation'
 import {useEffect, useMemo, useRef, useState} from 'react'
-import {BarChart3, Bell, ChevronDown, Compass, Gift, Home, LogOut, Menu, Search, Settings, ShieldCheck, ShoppingBag, Ticket, TrendingUp, UserRound, Wallet, WalletCards, X} from 'lucide-react'
+import {BarChart3, Bell, ChevronDown, ChevronLeft, ChevronRight, Compass, Gift, Home, LogOut, Menu, Search, Settings, ShieldCheck, ShoppingBag, Ticket, TrendingUp, UserRound, Wallet, WalletCards, X} from 'lucide-react'
 import {events} from '@/mock/data'
 import {useAppStore} from '@/stores/app'
 
@@ -17,6 +17,7 @@ export function AppShell({children}:{children:React.ReactNode}){
   const [searchOpen,setSearchOpen]=useState(false)
   const [notificationsOpen,setNotificationsOpen]=useState(false)
   const [accountOpen,setAccountOpen]=useState(false)
+  const [sidebarCollapsed,setSidebarCollapsed]=useState(false)
   const shellRef=useRef<HTMLDivElement>(null)
   const results=useMemo(()=>query.trim()?events.filter(e=>`${e.name} ${e.artist} ${e.venue} ${e.city}`.toLowerCase().includes(query.toLowerCase())).slice(0,5):events.slice(0,3),[query])
 
@@ -25,12 +26,13 @@ export function AppShell({children}:{children:React.ReactNode}){
   const submitSearch=(event:React.FormEvent)=>{event.preventDefault();if(results[0]){router.push(`/events/${results[0].id}`);setSearchOpen(false);setQuery('')}}
 
   return <div className="app-shell">
-    <aside className={`sidebar ${sidebarOpen?'open':''}`}>
+    <aside className={`sidebar ${sidebarOpen?'open':''} ${sidebarCollapsed?'desktop-collapsed':''}`}>
+      <button className="sidebar-collapse" onClick={()=>setSidebarCollapsed(value=>!value)} aria-label={sidebarCollapsed?'Expand navigation':'Collapse navigation'}>{sidebarCollapsed?<ChevronRight size={15}/>:<ChevronLeft size={15}/>}</button>
       <Link href="/" className="brand"><span className="brand-mark">P</span><span>POPTIX</span><small>MARKETS</small></Link>
       <nav className="nav" aria-label="Primary navigation">{links.map(([href,label,Icon])=><Link key={href} href={href} className={path===href||href!=='/'&&path.startsWith(href)?'active':''} onClick={()=>sidebarOpen&&toggleSidebar()}><Icon size={17}/><span>{label}</span></Link>)}</nav>
       <div className="sidebar-foot"><div className="network-status"><span/><div><strong>Polygon</strong><small>Network operational</small></div><b>24ms</b></div><div className="rewards-callout"><div className="row"><span className="badge cyan">PXT REWARDS</span><Gift size={16}/></div><div className="strong rewards-title">12,450 points</div><div className="small muted rewards-copy">2,550 points until Platinum benefits.</div><Link className="btn secondary rewards-link" href="/rewards">View rewards</Link></div></div>
     </aside>
-    <main className="main">
+    <main className={`main ${sidebarCollapsed?'sidebar-is-collapsed':''}`}>
       <header className="header" ref={shellRef}>
         <button className="icon-btn mobile-menu" onClick={toggleSidebar} aria-label="Toggle navigation">{sidebarOpen?<X size={18}/>:<Menu size={18}/>}</button>
         <Link href="/" className="top-brand"><span className="brand-mark">P</span><strong>POPTIX</strong></Link>
